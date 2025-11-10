@@ -10,3 +10,7 @@ app = Flask(__name__)
 def login():
     #do some thing in here
     print("login")
+
+@app.route('/api/register', methods=['POST'])
+def register():
+    print("register")
