@@ -45,7 +45,13 @@ class User(db.Model):
 class Registration(db.Model):
     __tablename__ = 'registrations'
     id = db.Column(db.Integer, primary_key=True)
-    event_name = db.Column(db.String(100), nullable=False)
+    event_name = db.Column(db.String(100), nullable=False)  # 活动名称
+    # 新增字段
+    game_username = db.Column(db.String(80), nullable=False)  # 游戏用户名（必填）
+    team_name = db.Column(db.String(100), nullable=False)     # 参与车队名称（必填）
+    group_type = db.Column(db.String(50), nullable=False)     # 参与组别（必填，选择框值）
+    supplement = db.Column(db.Text, nullable=True)            # 补充说明（可选，纯文本）
+    # 关联字段
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     registered_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
@@ -53,10 +59,15 @@ class Registration(db.Model):
         return {
             'id': self.id,
             'event_name': self.event_name,
+            'game_username': self.game_username,  # 新增返回字段
+            'team_name': self.team_name,          # 新增返回字段
+            'group_type': self.group_type,        # 新增返回字段
+            'supplement': self.supplement,        # 新增返回字段
             'user_id': self.user_id,
             'username': self.author.username,
             'registered_at': self.registered_at.isoformat()
         }
+
 
 # 5. JWT 用户加载器
 @jwt.user_lookup_loader
@@ -132,31 +143,71 @@ def event_register():
     if not request.is_json:
         return jsonify({"error": "Missing JSON in request"}), 400
     data = request.get_json()
-    if not data.get('event_name'):
-        return jsonify({"error": "Event name required"}), 400
-    # 创建报名记录
+
+    # 校验必填字段（包含新增字段）
+    required_fields = ['event_name', 'game_username', 'team_name', 'group_type']
+    if not all(k in data for k in required_fields):
+        return jsonify({
+            "error": "Missing required fields",
+            "required": required_fields  # 明确提示缺少哪些字段
+        }), 400
+
+    # 创建报名记录（包含新增字段）
     reg = Registration(
         event_name=data['event_name'],
+        game_username=data['game_username'],
+        team_name=data['team_name'],
+        group_type=data['group_type'],
+        supplement=data.get('supplement', ''),  # 可选字段，无则为空字符串
         user_id=get_jwt_identity()
     )
     db.session.add(reg)
     db.session.commit()
-    return jsonify({"message": "Registered", "registration": reg.to_dict()}), 201
 
-# 6.5 查看所有报名
+    return jsonify({
+        "message": "Registered successfully",
+        "registration": reg.to_dict()
+    }), 201
+
+
+# 6.5 查看所有报名（整合筛选+总数统计）
 @app.route('/api/events', methods=['GET'])
 @jwt_required()
 def get_events():
-    regs = Registration.query.order_by(Registration.registered_at.desc()).all()
-    return jsonify({"registrations": [r.to_dict() for r in regs]}), 200
+    # 1. 获取前端传入的筛选参数（可选）
+    group_type = request.args.get('group_type')  # 组别筛选
+    event_name = request.args.get('event_name')  # 新增：活动名称筛选（可选扩展）
 
-# 7. 初始化数据库（关键：创建表）
-with app.app_context():
-    try:
-        db.create_all()  # 强制创建所有表
-        print("✅ 数据库表创建成功！")
-    except Exception as e:
-        print(f"❌ 表创建失败：{str(e)}")
+    # 2. 构建基础查询
+    query = Registration.query.order_by(Registration.registered_at.desc())
+
+    # 3. 应用筛选条件（支持多条件组合）
+    if group_type:
+        query = query.filter(Registration.group_type == group_type)
+    if event_name:
+        query = query.filter(Registration.event_name.like(f"%{event_name}%"))  # 模糊匹配
+
+    # 4. 执行查询并统计总数
+    regs = query.all()
+    total = len(regs)
+
+    # 5. 返回结果（含总数+筛选后列表）
+    return jsonify({
+        "total": total,  # 报名记录总数（筛选后）
+        "registrations": [r.to_dict() for r in regs]
+    }), 200
+
+
+# 6.6 查看当前用户报名
+@app.route('/api/events/my', methods=['GET'])
+@jwt_required()
+def get_my_events():
+    regs = Registration.query.filter_by(user_id=get_jwt_identity()).order_by(Registration.registered_at.desc()).all()
+    return jsonify({
+        "total": len(regs),  # 新增：当前用户报名总数
+        "registrations": [r.to_dict() for r in regs]
+    }), 200
+
 
 # 8. 启动应用
 if __name__ == '__main__':
