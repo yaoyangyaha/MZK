@@ -9,16 +9,17 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app, resources=r"/api/*")
 # 2. 配置（替换为你的 MySQL 信息）
-app.config['SECRET_KEY'] = 'dev-secret-key-123456'
-app.config['JWT_SECRET_KEY'] = 'jwt-secret-key-654321'
+app.config['SECRET_KEY'] = 'mzk-app-api-key-114514'
+app.config['JWT_SECRET_KEY'] = 'mzk-secret-app-api-key-114514'
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 1440
 # MySQL 配置（必改：替换 root 密码和数据库名）
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://mzk:mzk114514@localhost:3306/mzk'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+app.config['SQLALCHEMY_POOL_RECYCLE'] = 300  # 5分钟强制回收连接（小于MySQL默认8小时超时）
+app.config['SQLALCHEMY_POOL_PRE_PING'] = True  # 查询前自动ping，失效则重建连接
 app.config['SQLALCHEMY_POOL_SIZE'] = 10
 app.config['SQLALCHEMY_MAX_OVERFLOW'] = 5
-app.config['SQLALCHEMY_POOL_RECYCLE'] = 300
-app.config['SQLALCHEMY_POOL_PRE_PING'] = True
 
 # 3. 初始化扩展（必须在 app 配置后）
 db = SQLAlchemy(app)  # 直接绑定 app，避免 init_app 问题
@@ -41,6 +42,7 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
 
 class Registration(db.Model):
     __tablename__ = 'registrations'
@@ -74,6 +76,7 @@ class Registration(db.Model):
 def user_lookup_callback(_jwt_header, jwt_data):
     identity = jwt_data["sub"]
     return User.query.get(int(identity))
+
 
 # 6. 接口路由
 # 6.1 注册
