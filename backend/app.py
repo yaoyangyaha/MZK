@@ -25,6 +25,7 @@ app.config['SQLALCHEMY_MAX_OVERFLOW'] = 5
 db = SQLAlchemy(app)  # 直接绑定 app，避免 init_app 问题
 jwt = JWTManager(app)
 
+
 # 4. 定义模型（必须在 db 初始化后）
 class User(db.Model):
     __tablename__ = 'users'
@@ -82,8 +83,6 @@ def user_lookup_callback(_jwt_header, jwt_data):
 # 6.1 注册
 @app.route('/api/register', methods=['POST'])
 def register():
-    if not request.is_json:
-        return jsonify({"error": "Missing JSON in request"}), 400
     data = request.get_json()
     # 校验必填字段
     required = ['username', 'email', 'phone', 'password']
@@ -107,6 +106,7 @@ def register():
     db.session.commit()
     return jsonify({"message": "User created", "user_id": user.id}), 201
 
+
 # 6.2 登录
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -126,6 +126,7 @@ def login():
         "user": {"id": user.id, "username": user.username, "email": user.email}
     }), 200
 
+
 # 6.3 获取当前用户信息
 @app.route('/api/user/me', methods=['GET'])
 @jwt_required()
@@ -138,6 +139,7 @@ def get_me():
         "phone": user.phone,
         "created_at": user.created_at.isoformat()
     }), 200
+
 
 # 6.4 活动报名
 @app.route('/api/events/register', methods=['POST'])
