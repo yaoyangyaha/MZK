@@ -1,3 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MZK</string>
+    <!-- 登录页 -->
+    <string name="login_title">用户登录</string>
+    <string name="hint_username">用户名</string>
+    <string name="hint_password">密码</string>
+    <string name="btn_login">登录</string>
+    <!-- 报名页 -->
+    <string name="register_title">活动报名</string>
+    <string name="hint_event_name">活动名称</string>
+    <string name="hint_game_username">游戏用户名</string>
+    <string name="hint_team_name">车队名称</string>
+    <string name="hint_group_type">参与组别</string>
+    <string name="hint_supplement">补充说明（选填）</string>
+    <string name="btn_submit">提交报名</string>
+    <string name="btn_my_registrations">查看我的报名</string>
+    <!-- 个人中心 -->
+    <string name="mine_title">个人中心</string>
+    <string name="btn_logout">退出登录</string>
+    <!-- 底部导航 -->
+    <string name="nav_news">资讯</string>
+    <string name="nav_register">报名</string>
+    <string name="nav_mine">我的</string>
 </resources>

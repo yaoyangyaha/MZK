@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_news">
+
+    <!-- 1. 资讯页（无跳登录的action，无需定义） -->
+    <fragment
+        android:id="@+id/nav_news"
+        android:name="com.xtiantech.mzk.ui.news.NewsFragment"
+        android:label="@string/nav_news"
+        tools:layout="@layout/fragment_news" />
+
+    <!-- 2. 报名页（发起跳登录的页面，action定义在该节点内） -->
+    <fragment
+        android:id="@+id/nav_register"
+        android:name="com.xtiantech.mzk.ui.register.RegisterFragment"
+        android:label="@string/nav_register"
+        tools:layout="@layout/fragment_register">
+
+        <!-- 跳登录页的action（定义在nav_register节点内！） -->
+        <action
+            android:id="@+id/action_nav_register_to_loginFragment"
+        app:destination="@id/loginFragment" />
+        <!-- 命名更规范，避免冲突 -->
+        <!-- 目标是已注册的loginFragment -->
+
+        <!-- 跳我的报名页的action -->
+        <action
+            android:id="@+id/action_nav_register_to_myRegistrationsFragment"
+            app:destination="@id/myRegistrationsFragment" />
+    </fragment>
+
+    <!-- 3. 个人中心（发起跳登录的页面，action定义在该节点内） -->
+    <fragment
+        android:id="@+id/nav_mine"
+        android:name="com.xtiantech.mzk.ui.mine.MineFragment"
+        android:label="@string/nav_mine"
+        tools:layout="@layout/fragment_mine">
+
+        <!-- 跳登录页的action（定义在nav_mine节点内！） -->
+        <action
+            android:id="@+id/action_nav_mine_to_loginFragment"
+        app:destination="@id/loginFragment" />
+        <!-- 唯一ID，避免和其他action冲突 -->
+    </fragment>
+
+    <!-- 4. 登录页（目标页面，必须先注册ID） -->
+    <fragment
+        android:id="@+id/loginFragment"
+    android:name="com.xtiantech.mzk.ui.login.LoginFragment"
+    android:label="登录"
+    tools:layout="@layout/fragment_login" />
+    <!-- 确保该ID存在，且无拼写错误 -->
+
+    <!-- 5. 我的报名页（目标页面） -->
+    <fragment
+        android:id="@+id/myRegistrationsFragment"
+        android:name="com.xtiantech.mzk.ui.register.MyRegistrationsFragment"
+        android:label="我的报名"
+        tools:layout="@layout/fragment_my_registrations" />
+</navigation>
