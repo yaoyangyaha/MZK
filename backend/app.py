@@ -216,4 +216,4 @@ def get_my_events():
 
 # 8. 启动应用
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
