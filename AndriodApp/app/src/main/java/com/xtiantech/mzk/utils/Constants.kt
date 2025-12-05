@@ -3,7 +3,7 @@ package com.xtiantech.mzk.utils
 // 全局常量（替换为你的Flask后端IP）
 object Constants {
     // 后端接口基础地址（局域网IP，需替换为实际地址）
-    const val BASE_URL = "http://192.168.1.17:5000/"
+    const val BASE_URL = "http://192.168.1.17:5010/"
     // SharedPreferences 名称（存储用户信息）
     const val SP_NAME = "user_info"
     // SP存储Key
