@@ -11,7 +11,7 @@
     <string name="hint_event_name">活动名称</string>
     <string name="hint_game_username">游戏用户名</string>
     <string name="hint_team_name">车队名称</string>
-    <string name="hint_group_type">参与组别</string>
+    <string name="hint_group_type">&#160;&#160;&#160;&#160;参与组别</string>
     <string name="hint_supplement">补充说明（选填）</string>
     <string name="btn_submit">提交报名</string>
     <string name="btn_my_registrations">查看我的报名</string>

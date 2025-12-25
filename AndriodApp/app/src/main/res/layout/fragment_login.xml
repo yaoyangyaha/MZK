@@ -65,6 +65,18 @@
                 android:layout_height="wrap_content"
                 android:text="@string/btn_login"
                 android:backgroundTint="@color/design_default_color_primary"/>
+            <!-- 登录页布局新增 -->
+            <!-- 登录按钮下方新增 -->
+            <TextView
+                android:id="@+id/tvGoRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="没有账号？去注册"
+            android:textColor="?attr/colorPrimary"
+            android:layout_marginTop="20dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:textSize="14sp"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
